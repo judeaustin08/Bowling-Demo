@@ -669,7 +669,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e257dc3c956ee42dd81345d8ee732153, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  accelerationFactor: 2
+  accelerationFactor: 4
   maxVelocity: 5
   brakingMultiplier: 4
   thirdPersonCamera: {fileID: 330585545}

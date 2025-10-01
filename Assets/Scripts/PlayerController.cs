@@ -20,7 +20,10 @@ public class PlayerController : MonoBehaviour
     private Vector3 lookAngles;
     private GameObject camAnchor;
 
-    void Awake() {
+    private const string _COLLECTIBLE_TAG = "Collectible";
+
+    void Awake()
+    {
         inp = new();
         rb = GetComponent<Rigidbody>();
 
@@ -33,23 +36,27 @@ public class PlayerController : MonoBehaviour
         lookAngles = new();
     }
 
-    void OnEnable() {
+    void OnEnable()
+    {
         inp.Enable();
     }
 
-    void OnDisable() {
+    void OnDisable()
+    {
         inp.Disable();
     }
 
-    void Start() {
+    void Start()
+    {
         // Cap linear velocity
         rb.maxLinearVelocity = maxVelocity;
     }
 
-    void Update() {
+    void Update()
+    {
         // Get look delta
         Vector2 lookDelta = inp.Player.Look.ReadValue<Vector2>();
-        lookAngles += new Vector3(lookDelta.y, (invertLook ? -1 : 1) * lookDelta.x, 0);
+        lookAngles += new Vector3(-lookDelta.y, (invertLook ? -1 : 1) * lookDelta.x, 0);
         lookAngles.x = Mathf.Clamp(lookAngles.x, minVerticalLook, maxVerticalLook);
         Quaternion lookRot = Quaternion.Euler(lookAngles);
 
@@ -67,17 +74,17 @@ public class PlayerController : MonoBehaviour
         );
 
         // If the player has linear velocity
-        if (rb.linearVelocity.magnitude != 0) {
+        if (rb.linearVelocity.magnitude != 0)
+        {
             // Separate movement vector into components parallel and perpendicular to velocity vector
             Vector3 perpendicularVector = Vector3.Cross(Vector3.up, rb.linearVelocity);
+            Debug.DrawRay(transform.position, perpendicularVector, Color.green);
             float[] movementComponents = new float[] {
                 Vector3.Dot(movement, perpendicularVector) / perpendicularVector.magnitude,
                 Vector3.Dot(movement, rb.linearVelocity) / rb.linearVelocity.magnitude
             };
 
-            // Apply the braking multiplier to any component of movement which is in the opposing direction to its respoective component of velocity
-            if (movementComponents[0] < 0)
-                movementComponents[0] *= brakingMultiplier;
+            // Apply the braking multiplier to the component of movement which is in the opposing direction to velocity
             if (movementComponents[1] < 0)
                 movementComponents[1] *= brakingMultiplier;
 
@@ -93,5 +100,13 @@ public class PlayerController : MonoBehaviour
             transform.position + camOffset,
             lookRot
         );
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag(_COLLECTIBLE_TAG))
+        {
+            other.gameObject.GetComponent<Collectible>().OnGet();
+        }
     }
 }
