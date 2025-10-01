@@ -53,7 +53,7 @@ public class WanderingAI : MonoBehaviour
         // Return early if there is no path
         if (path == null) return;
 
-        Debug.Log("Following path");
+        //Debug.Log("Following path");
 
         Follow();
 
@@ -67,7 +67,7 @@ public class WanderingAI : MonoBehaviour
 
     public void OnPathComplete(Path p)
     {
-        Debug.Log(p.error ? "There was an error generating the path!" : "Successfully returned a path.");
+        //Debug.Log(p.error ? "There was an error generating the path!" : "Successfully returned a path.");
 
         if (!p.error)
         {
@@ -91,6 +91,7 @@ public class WanderingAI : MonoBehaviour
                 {
                     // Set the status variable in case the game has code which needs to know
                     reachedEndOfPath = true;
+                    path = null;
                     timer = Time.time;
                     break;
                 }
@@ -100,13 +101,14 @@ public class WanderingAI : MonoBehaviour
 
     private void ChooseTarget()
     {
+        reachedEndOfPath = false;
         GridGraph grid = asp.data.gridGraph;
         GridNode randomNode = null;
 
-        while (randomNode == null || (!randomNode.Walkable || !PathUtilities.IsPathPossible(
+        while (randomNode == null || !randomNode.Walkable || !PathUtilities.IsPathPossible(
             asp.GetNearest(transform.position, NNConstraint.Default).node,
             randomNode
-        )))
+        ))
             randomNode = grid.nodes[Random.Range(0, grid.nodes.Length)];
 
         // Request to seeker to begin calculating a path.
