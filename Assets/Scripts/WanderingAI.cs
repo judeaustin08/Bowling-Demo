@@ -23,6 +23,10 @@ public class WanderingAI : MonoBehaviour
     private Path path;
     private readonly System.Random rand = new();
 
+    [Tooltip("The radius around this NPC's initial position in which it will wander")]
+    [SerializeField] private float territoryRadius = 10f;
+    private Vector3 initialPosition;
+
     private void Awake()
     {
         seeker = GetComponent<Seeker>();
@@ -39,6 +43,8 @@ public class WanderingAI : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
+        initialPosition = transform.position;
+
         // Path requests are asynchronous, so the function will run a callback on completion. Assign the callback here to apply to every request.
         seeker.pathCallback += OnPathComplete;
 
@@ -109,9 +115,26 @@ public class WanderingAI : MonoBehaviour
             asp.GetNearest(transform.position, NNConstraint.Default).node,
             randomNode
         ))
-            randomNode = grid.nodes[Random.Range(0, grid.nodes.Length)];
+        {
+            // Select from a radius
+            Vector3 point = Random.insideUnitSphere * territoryRadius;
+            point.y = 0;
+            point += initialPosition;
+            randomNode = (GridNode)grid.GetNearest(point, NNConstraint.Default).node;
+            // Select from the whole grid
+            //randomNode = grid.nodes[Random.Range(0, grid.nodes.Length)];
+        }
 
         // Request to seeker to begin calculating a path.
         seeker.StartPath(transform.position, grid.nodeSize * (Vector3)randomNode.position);
+    }
+
+    void OnDrawGizmos()
+    {
+        UnityEditor.Handles.DrawWireDisc(
+            Application.isPlaying ? initialPosition : transform.position,
+            Vector3.up,
+            territoryRadius
+        );
     }
 }
