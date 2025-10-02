@@ -8,35 +8,59 @@ public class GlobalChunkManager : MonoBehaviour
 
     [Tooltip("Transform around which chunks are loaded")]
     [SerializeField] private Transform player;
+    [SerializeField] private bool resetPlayerHeightOnStart;
     private Vector2Int currentChunk;
     [SerializeField] private GameObject chunkPrefab;
 
     [SerializeField] private int renderDistance = 5;
+    [Tooltip("The number of vertices on each side of a chunk mesh")]
+    [SerializeField] private int standardResolution = 10;
     [Tooltip("The desired world space size of each chunk, in Unity units")]
-    [SerializeField] private float worldSize = 10;
+    [SerializeField] private float chunkSize = 10;
     private int seed = 0;
     private System.Random rand = new();
 
     [Header("Noise generation variables")]
-    [SerializeField] private float coarseAmplitude;
-    [SerializeField] private float coarseFrequency;
-    [SerializeField] private int octaves;
-    [SerializeField] private float amplitude;
-    [SerializeField] private float amplitudeFactor;
-    [SerializeField] private float frequency;
-    [SerializeField] private float frequencyFactor;
+    [SerializeField] private float coarseAmplitude = 1;
+    [SerializeField] private float coarseFrequency = 1;
+    [SerializeField] private int octaves = 1;
+    [SerializeField] private float amplitude = 1;
+    [SerializeField] private float amplitudeFactor = 1;
+    [SerializeField] private float frequency = 1;
+    [SerializeField] private float frequencyFactor = 1;
+
+    [Header("Debugging")]
+    [SerializeField] private bool drawGizmos = false;
+    [SerializeField] private float gizmoDrawDistance = 10f;
 
     void Awake()
     {
         seed = (int)(rand.NextDouble() * 10000);
     }
 
+    void Start()
+    {
+        LoadChunks();
+
+        if (resetPlayerHeightOnStart)
+            player.transform.position += new Vector3(
+                0,
+                1 + GetHeight(player.transform.position),
+                0
+            );
+    }
+
     void Update()
+    {
+        LoadChunks();
+    }
+
+    private void LoadChunks()
     {
         // Get chunk position of player
         currentChunk = new Vector2Int(
-            (int)(player.position.x / worldSize),
-            (int)(player.position.z / worldSize)
+            (int)(player.position.x / chunkSize),
+            (int)(player.position.z / chunkSize)
         );
 
         // Loop through all loaded chunks to see if there are any chunks that should be unloaded
@@ -79,8 +103,6 @@ public class GlobalChunkManager : MonoBehaviour
     {
         float[] heightmap = new float[c.vertices.Length];
 
-        float a_local, f_local;
-
         if (amplitudeFactor != 1)
             maxHeight = amplitude * (1 - Mathf.Pow(amplitudeFactor, octaves)) / (1 - amplitudeFactor);
         else maxHeight = amplitude;
@@ -90,30 +112,10 @@ public class GlobalChunkManager : MonoBehaviour
         // For each vertex
         for (int i = 0; i < heightmap.Length; i++)
         {
-            a_local = amplitude;
-            f_local = frequency;
-
-            height = 0;
             // Get world coordinates to use as an input for perlin noise
-            coordinates = c.transform.position + c.vertices[i] + Vector3.one * (seed + 0.1f);
+            coordinates = c.transform.position + c.vertices[i];
 
-            // Detailing noise
-            for (int octave = 0; octave < octaves; octave++)
-            {
-                // Calculate and transform perlin noise output
-                height += Mathf.PerlinNoise(coordinates.x / f_local, coordinates.z / f_local) * a_local;
-
-                a_local *= amplitudeFactor;
-                f_local *= frequencyFactor;
-            }
-
-            // Normalize detailing height
-            height *= amplitude / maxHeight;
-
-            // Coarse noise to add large-scale height variation
-            height += Mathf.PerlinNoise(coordinates.x / coarseFrequency, coordinates.z / coarseFrequency) * coarseAmplitude;
-
-            height = Mathf.Floor(height);
+            height = GetHeight(coordinates);
 
             // Save to corresponding heightmap index
             heightmap[i] = height;
@@ -122,16 +124,46 @@ public class GlobalChunkManager : MonoBehaviour
         return heightmap;
     }
 
+    private float GetHeight(Vector3 coordinates)
+    {
+        float height = 0;
+        coordinates += Vector3.one * (seed + 0.1f);
+
+        float a_local = amplitude;
+        float f_local = frequency;
+
+        // Detailing noise
+        for (int octave = 0; octave < octaves; octave++)
+        {
+            // Calculate and transform perlin noise output
+            height += Mathf.PerlinNoise(coordinates.x / f_local, coordinates.z / f_local) * a_local;
+
+            a_local *= amplitudeFactor;
+            f_local *= frequencyFactor;
+        }
+
+        // Normalize detailing height
+        height *= amplitude / maxHeight;
+
+        // Coarse noise to add large-scale height variation
+        height += Mathf.PerlinNoise(coordinates.x / coarseFrequency, coordinates.z / coarseFrequency) * coarseAmplitude;
+
+        height = Mathf.Floor(height);
+
+        return height;
+    }
+
     private GameObject CreateChunk(Vector2 index)
     {
         GameObject obj = Instantiate(
             chunkPrefab,
-            new Vector3(index.x, 0, index.y) * worldSize,
+            new Vector3(index.x, 0, index.y) * chunkSize,
             Quaternion.identity
         );
 
         Chunk c = obj.GetComponent<Chunk>();
-        c.worldSize = worldSize;
+        c.chunkResolution = standardResolution;
+        c.worldSize = chunkSize;
         c.RegenerateMesh();
         float[] heightmap = GenerateHeightmap(c);
         c.SetHeights(heightmap);
@@ -148,6 +180,24 @@ public class GlobalChunkManager : MonoBehaviour
             c.RegenerateMesh();
             float[] heightmap = GenerateHeightmap(c);
             c.SetHeights(heightmap);
+        }
+    }
+    
+    private void OnDrawGizmos()
+    {
+        if (!drawGizmos) return;
+        Gizmos.color = Color.black;
+
+        foreach (GameObject obj in new List<GameObject>(loaded.Values))
+        {
+            if ((player.transform.position - obj.transform.position).magnitude < gizmoDrawDistance)
+            {
+                Chunk c = obj.GetComponent<Chunk>();
+                if (c.vertices == null) continue;
+
+                foreach (Vector3 vertex in c.vertices)
+                    Gizmos.DrawSphere(c.transform.position + vertex, 0.1f);
+            }
         }
     }
 }

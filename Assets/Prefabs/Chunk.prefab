@@ -50,6 +50,7 @@ MonoBehaviour:
   chunkResolution: 11
   worldSize: 10
   vertices: []
+  drawGizmos: 0
 --- !u!33 &6498119118196687966
 MeshFilter:
   m_ObjectHideFlags: 0

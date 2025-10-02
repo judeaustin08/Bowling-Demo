@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 // Generate a custom plane mesh with a variable number of vertices
@@ -5,7 +6,7 @@ using UnityEngine;
 public class Chunk : MonoBehaviour
 {
     [Tooltip("The number of vertices per side of a chunk")]
-    [SerializeField] private int chunkResolution;
+    public int chunkResolution;
     [HideInInspector] public float worldSize;
 
     private float vertexSpacing;
@@ -17,8 +18,7 @@ public class Chunk : MonoBehaviour
     // adjacent chunks due to the fact that they do not have access to other chunks' vertex data.
     private int[] borderTris;
     private Mesh mesh;
-
-    public bool drawGizmos = false;
+    private Dictionary<Vector3, GameObject> objects = new();
 
     // Cleanly regenerate the vertex and tri information for this object
     public void RegenerateMesh()
@@ -26,7 +26,6 @@ public class Chunk : MonoBehaviour
         vertexSpacing = worldSize / (chunkResolution - 1);
 
         GetComponent<MeshFilter>().mesh = mesh = new Mesh();
-        GetComponent<MeshCollider>().sharedMesh = mesh;
 
         int borderSize = chunkResolution + 2;
         vertices = new Vector3[borderSize * borderSize];
@@ -103,6 +102,7 @@ public class Chunk : MonoBehaviour
         mesh.vertices = vertices;
         mesh.normals = RecalculateNormals();
         mesh.RecalculateBounds();
+        GetComponent<MeshCollider>().sharedMesh = mesh;
     }
 
     // Custom method to recalculate the lighting normals for a mesh. This is necessary because
@@ -139,15 +139,5 @@ public class Chunk : MonoBehaviour
         Vector3 ac = c - a;
 
         return Vector3.Cross(ab, ac).normalized;
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (!drawGizmos || vertices == null) return;
-
-        Gizmos.color = Color.black;
-
-        foreach (Vector3 vertex in vertices)
-            Gizmos.DrawSphere(vertex, 0.1f);
     }
 }
