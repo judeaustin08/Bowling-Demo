@@ -81,7 +81,9 @@ public class GlobalChunkManager : MonoBehaviour
 
         float a_local, f_local;
 
-        maxHeight = amplitude * (1 - Mathf.Pow(amplitudeFactor, octaves)) / (1 - amplitudeFactor);
+        if (amplitudeFactor != 1)
+            maxHeight = amplitude * (1 - Mathf.Pow(amplitudeFactor, octaves)) / (1 - amplitudeFactor);
+        else maxHeight = amplitude;
 
         float height;
         Vector3 coordinates;
