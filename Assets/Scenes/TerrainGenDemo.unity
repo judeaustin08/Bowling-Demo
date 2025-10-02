@@ -289,8 +289,10 @@ MonoBehaviour:
   chunkPrefab: {fileID: 2918678307971240126, guid: 4b08291c132fb41548491892b46e3e8d, type: 3}
   renderDistance: 5
   worldSize: 10
+  coarseAmplitude: 40
+  coarseFrequency: 100
   octaves: 5
-  amplitude: 20
+  amplitude: 5
   amplitudeFactor: 0.6
   frequency: 50
   frequencyFactor: 0.1

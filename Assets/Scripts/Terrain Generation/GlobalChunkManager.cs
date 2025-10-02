@@ -18,6 +18,8 @@ public class GlobalChunkManager : MonoBehaviour
     private System.Random rand = new();
 
     [Header("Noise generation variables")]
+    [SerializeField] private float coarseAmplitude;
+    [SerializeField] private float coarseFrequency;
     [SerializeField] private int octaves;
     [SerializeField] private float amplitude;
     [SerializeField] private float amplitudeFactor;
@@ -93,19 +95,23 @@ public class GlobalChunkManager : MonoBehaviour
             // Get world coordinates to use as an input for perlin noise
             coordinates = c.transform.position + c.vertices[i] + Vector3.one * (seed + 0.1f);
 
+            // Detailing noise
             for (int octave = 0; octave < octaves; octave++)
             {
-                coordinates /= f_local;
-
                 // Calculate and transform perlin noise output
-                height += Mathf.PerlinNoise(coordinates.x, coordinates.z) * a_local;
+                height += Mathf.PerlinNoise(coordinates.x / f_local, coordinates.z / f_local) * a_local;
 
                 a_local *= amplitudeFactor;
                 f_local *= frequencyFactor;
             }
 
-            // Normalize height
+            // Normalize detailing height
             height *= amplitude / maxHeight;
+
+            // Coarse noise to add large-scale height variation
+            height += Mathf.PerlinNoise(coordinates.x / coarseFrequency, coordinates.z / coarseFrequency) * coarseAmplitude;
+
+            height = Mathf.Floor(height);
 
             // Save to corresponding heightmap index
             heightmap[i] = height;

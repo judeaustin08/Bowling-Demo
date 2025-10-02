@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 // Generate a custom plane mesh with a variable number of vertices
@@ -18,6 +17,8 @@ public class Chunk : MonoBehaviour
     // adjacent chunks due to the fact that they do not have access to other chunks' vertex data.
     private int[] borderTris;
     private Mesh mesh;
+
+    public bool drawGizmos = false;
 
     // Cleanly regenerate the vertex and tri information for this object
     public void RegenerateMesh()
@@ -58,7 +59,7 @@ public class Chunk : MonoBehaviour
                 borderTris[bti + 5] = vi + rowSize + 2;
 
                 // If tri doesn't contain border vertices
-                if (vi > borderSize && vi < borderSize * (triangleSize + 1) && vi % borderSize > 0 && vi % borderSize < rowSize-1)
+                if (vi > borderSize && vi < borderSize * (triangleSize + 1) && vi % borderSize > 0 && vi % borderSize < rowSize - 1)
                 {
                     // Add triangle to rendered triangles array
                     triangles[ti] = vi;
@@ -142,7 +143,7 @@ public class Chunk : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (vertices == null) return;
+        if (!drawGizmos || vertices == null) return;
 
         Gizmos.color = Color.black;
 
