@@ -27,6 +27,9 @@ public class WanderingAI : MonoBehaviour
     [SerializeField] private float territoryRadius = 10f;
     private Vector3 initialPosition;
 
+    private Vector3 dir = new();
+    private Vector3 movement = new();
+
     private void Awake()
     {
         seeker = GetComponent<Seeker>();
@@ -53,6 +56,12 @@ public class WanderingAI : MonoBehaviour
 
     private void Update()
     {
+        transform.rotation = Quaternion.Euler(
+            0,
+            Vector3.SignedAngle(Vector3.forward, movement, Vector3.up),
+            0
+        );
+
         if (reachedEndOfPath && Time.time - timer >= minTargetInterval && rand.NextDouble() < targetChance)
             ChooseTarget();
 
@@ -66,8 +75,10 @@ public class WanderingAI : MonoBehaviour
         // Slow the seeker down gradually as it approaches the end of the path
         float speedFactor = reachedEndOfPath ? Mathf.Sqrt(distanceToWaypoint / nextWaypointDistance) : 1f;
 
-        Vector3 dir = (path.vectorPath[currentWaypoint] - transform.position).normalized;
-        Vector3 movement = dir * speed * speedFactor;
+        if (reachedEndOfPath) return;
+
+        dir = (path.vectorPath[currentWaypoint] - transform.position).normalized;
+        movement = dir * speed * speedFactor;
         _cc.SimpleMove(movement);
     }
 
@@ -129,6 +140,7 @@ public class WanderingAI : MonoBehaviour
         seeker.StartPath(transform.position, grid.nodeSize * (Vector3)randomNode.position);
     }
 
+    /*
     void OnDrawGizmos()
     {
         UnityEditor.Handles.DrawWireDisc(
@@ -137,4 +149,5 @@ public class WanderingAI : MonoBehaviour
             territoryRadius
         );
     }
+    */
 }

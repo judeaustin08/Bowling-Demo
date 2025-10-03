@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
@@ -20,6 +21,11 @@ public class PlayerController : MonoBehaviour
     private Vector3 lookAngles;
     private GameObject camAnchor;
 
+    [SerializeField] private TMP_Text txt_score;
+    private int score;
+    [SerializeField] private int scoreToWin = 5;
+    [SerializeField] private GameObject ui_win;
+
     private const string _COLLECTIBLE_TAG = "Collectible";
 
     void Awake()
@@ -34,6 +40,8 @@ public class PlayerController : MonoBehaviour
         thirdPersonCamera.transform.parent = camAnchor.transform;
         thirdPersonCamera.transform.position = Vector3.forward * -camDistance;
         lookAngles = new();
+
+        ui_win.SetActive(false);
     }
 
     void OnEnable()
@@ -54,6 +62,10 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (score >= scoreToWin) OnWin();
+
+        txt_score.text = string.Format("You have killed {0} rabbits!", score);
+
         // Get look delta
         Vector2 lookDelta = inp.Player.Look.ReadValue<Vector2>();
         lookAngles += new Vector3(-lookDelta.y, (invertLook ? -1 : 1) * lookDelta.x, 0);
@@ -103,11 +115,19 @@ public class PlayerController : MonoBehaviour
         );
     }
 
+    void OnWin()
+    {
+        Time.timeScale = 0;
+        txt_score.text = "";
+        ui_win.SetActive(true);
+    }
+
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag(_COLLECTIBLE_TAG))
         {
             other.gameObject.GetComponent<Collectible>().OnGet();
+            score++;
         }
     }
 }

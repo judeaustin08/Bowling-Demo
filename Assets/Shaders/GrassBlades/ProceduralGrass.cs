@@ -101,6 +101,8 @@ public class ProceduralGrass : MonoBehaviour
 
     public void Initialize(Mesh mesh)
     {
+        if (initialized) Dispose();
+
         kernel = computeShader.FindKernel("CalculateBladePositions");
 
         terrainMesh = mesh;
@@ -188,14 +190,17 @@ public class ProceduralGrass : MonoBehaviour
         */
 
         //Graphics.RenderPrimitivesIndexed(rp, MeshTopology.Triangles, grassTriangleBuffer, grassTriangleBuffer.count, instanceCount: terrainTriangleCount);
-        Graphics.DrawProcedural(material, bounds, MeshTopology.Triangles, grassTriangleBuffer, grassTriangleBuffer.count,
-            instanceCount: terrainTriangleCount,
-            properties: properties,
-            castShadows: castShadows,
-            receiveShadows: receiveShadows);
+        if (grassTriangleBuffer != null)
+            Graphics.DrawProcedural(
+                material, bounds, MeshTopology.Triangles, grassTriangleBuffer, grassTriangleBuffer.count,
+                instanceCount: terrainTriangleCount,
+                properties: properties,
+                castShadows: castShadows,
+                receiveShadows: receiveShadows
+            );
     }
 
-    private void OnDestroy()
+    public void Dispose()
     {
         terrainTriangleBuffer?.Dispose();
         terrainVertexBuffer?.Dispose();
@@ -204,5 +209,12 @@ public class ProceduralGrass : MonoBehaviour
         grassTriangleBuffer?.Dispose();
         grassVertexBuffer?.Dispose();
         grassUVBuffer?.Dispose();
+
+        initialized = false;
+    }
+
+    private void OnDisable()
+    {
+        Dispose();
     }
 }

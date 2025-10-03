@@ -117,6 +117,7 @@ public class Chunk : MonoBehaviour
         mesh.normals = RecalculateNormals();
         mesh.RecalculateBounds();
         GetComponent<MeshCollider>().sharedMesh = mesh;
+        GetComponent<ProceduralGrass>().Dispose();
         GetComponent<ProceduralGrass>().Initialize(mesh);
     }
 
