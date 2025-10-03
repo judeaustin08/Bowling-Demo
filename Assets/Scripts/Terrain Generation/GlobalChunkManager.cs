@@ -32,6 +32,8 @@ public class GlobalChunkManager : MonoBehaviour
     private int seed = 0;
     private System.Random rand = new();
 
+    private AstarPath asp;
+
     [Header("Noise generation variables")]
     [SerializeField] private float coarseAmplitude = 1;
     [SerializeField] private float coarseFrequency = 1;
@@ -49,6 +51,7 @@ public class GlobalChunkManager : MonoBehaviour
     {
         seed = (int)(rand.NextDouble() * 10000);
         rand = new System.Random(seed);
+        asp = FindAnyObjectByType<AstarPath>();
     }
 
     void Start()
@@ -68,6 +71,8 @@ public class GlobalChunkManager : MonoBehaviour
                 1 + GetHeight(player.transform.position),
                 0
             );
+
+        asp.Scan();
     }
 
     void Update()
@@ -118,6 +123,8 @@ public class GlobalChunkManager : MonoBehaviour
                     chunkmap[pos].SetActive(true);
                 }
             }
+
+        asp.ScanAsync();
     }
 
     private void GenerateObjects(Chunk c)
@@ -164,7 +171,7 @@ public class GlobalChunkManager : MonoBehaviour
         return heightmap;
     }
 
-    private float GetHeight(Vector3 coordinates)
+    public float GetHeight(Vector3 coordinates)
     {
         float height = 0;
         coordinates += Vector3.one * (seed + 0.1f);
