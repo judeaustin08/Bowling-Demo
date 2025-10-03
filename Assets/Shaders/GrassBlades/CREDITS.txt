@@ -1,3 +1,3 @@
-I followed a video tutorial (Ned Makes Games, 2020) found on YouTube to make this shader, with modifications using information found in the comments or on the official Unity Documentation.
+Modified from GitHub repository shaders-6grass (Daniel Ilett, 2022)
 
-Ned Makes Games (2020, December 9). Grass Fields in Unity URP! Generate Blades with Compute Shaders! ✔️ 2020.3 | Game Dev Tutorial. YouTube. https://www.youtube.com/watch?v=DeATXF4Szqo
+Daniel Ilett. (2022, December 3). shaders-6grass. https://github.com/daniel-ilett/shaders-6grass
