@@ -6,12 +6,13 @@ using UnityEngine;
 public class Chunk : MonoBehaviour
 {
     [Tooltip("The number of vertices per side of a chunk")]
-    public int chunkResolution;
+    [HideInInspector] public int chunkResolution;
     [HideInInspector] public float worldSize;
 
     private float vertexSpacing;
 
     [HideInInspector] public Vector3[] vertices;
+    private Vector2[] uvs;
     private int[] triangles;
     // The normal vector calculation takes into account the faces adjacent to the face whose normal
     // is being calculated. These border faces are necessary to eliminate lighting seams between
@@ -27,15 +28,23 @@ public class Chunk : MonoBehaviour
 
         GetComponent<MeshFilter>().mesh = mesh = new Mesh();
 
+        mesh.name = string.Format(
+            "Chunk <{0}, {1}>",
+            (int)(transform.position.x / worldSize),
+            (int)(transform.position.z / worldSize)
+        );
+
         int borderSize = chunkResolution + 2;
         vertices = new Vector3[borderSize * borderSize];
+        uvs = new Vector2[borderSize * borderSize];
         float x, y;
         // Loop through all vertices and set them to the correct positions
         for (int i = 0; i < vertices.Length; i++)
         {
-            x = (i % borderSize - 1) * vertexSpacing;
-            y = (i / borderSize - 1) * vertexSpacing;
-            vertices[i] = new Vector3(x, 0, y);
+            x = i % borderSize - 1;
+            y = i / borderSize - 1;
+            uvs[i] = new Vector2(x, y);
+            vertices[i] = new Vector3(x, 0, y) * vertexSpacing;
         }
 
         mesh.vertices = vertices;
@@ -68,8 +77,6 @@ public class Chunk : MonoBehaviour
 
                     ti += 6;
                 }
-
-                mesh.triangles = triangles;
             }
         }
 
@@ -103,6 +110,7 @@ public class Chunk : MonoBehaviour
         mesh.normals = RecalculateNormals();
         mesh.RecalculateBounds();
         GetComponent<MeshCollider>().sharedMesh = mesh;
+        GetComponent<ProceduralGrass>().Initialize(mesh);
     }
 
     // Custom method to recalculate the lighting normals for a mesh. This is necessary because

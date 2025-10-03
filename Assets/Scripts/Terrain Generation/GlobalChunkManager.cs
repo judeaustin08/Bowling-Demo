@@ -103,9 +103,8 @@ public class GlobalChunkManager : MonoBehaviour
     {
         float[] heightmap = new float[c.vertices.Length];
 
-        if (amplitudeFactor != 1)
-            maxHeight = amplitude * (1 - Mathf.Pow(amplitudeFactor, octaves)) / (1 - amplitudeFactor);
-        else maxHeight = amplitude;
+        maxHeight = amplitude * (1 - Mathf.Pow(amplitudeFactor, octaves)) / (1 - amplitudeFactor);
+        if (float.IsNaN(maxHeight) || float.IsInfinity(maxHeight)) maxHeight = 1;
 
         float height;
         Vector3 coordinates;

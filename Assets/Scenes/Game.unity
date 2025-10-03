@@ -150,9 +150,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1870873717}
   resetPlayerHeightOnStart: 1
-  chunkPrefab: {fileID: 2918678307971240126, guid: 4b08291c132fb41548491892b46e3e8d, type: 3}
+  chunkPrefab: {fileID: 779916097287763534, guid: fee3f4ca754234a4c8c32c8cbc145085, type: 3}
   renderDistance: 10
-  worldSize: 10
+  standardResolution: 11
+  chunkSize: 10
   coarseAmplitude: 3
   coarseFrequency: 100
   octaves: 2
@@ -160,7 +161,7 @@ MonoBehaviour:
   amplitudeFactor: 0.4
   frequency: 80
   frequencyFactor: 0.3
-  drawGizmos: 1
+  drawGizmos: 0
   gizmoDrawDistance: 50
 --- !u!4 &138598165
 Transform:
@@ -390,37 +391,6 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
---- !u!1 &1664237877
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1664237878}
-  m_Layer: 0
-  m_Name: Viewer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1664237878
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1664237877}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1870873711
 GameObject:
   m_ObjectHideFlags: 0
@@ -587,4 +557,3 @@ SceneRoots:
   - {fileID: 820929916}
   - {fileID: 138598165}
   - {fileID: 1870873717}
-  - {fileID: 1664237878}

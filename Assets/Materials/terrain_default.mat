@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: terrain_default
-  m_Shader: {fileID: -6465566751694194690, guid: 0193eea5c29b140838df67c1c4fb7bf4, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 6b18a51e57d1c477ba3e7e1b7ad98a46, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -136,6 +136,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Texture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -204,7 +208,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0, g: 0.8018868, b: 0.046035368, a: 1}
-    - _Color: {r: 0, g: 0.8018868, b: 0.04603535, a: 1}
+    - _Color: {r: 0, g: 0.46226418, b: 0.027192036, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Lit_Color: {r: 0, g: 1, b: 0.07070708, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}

@@ -93,7 +93,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // Apply force
-        if (movement.x != float.NaN && movement.y != float.NaN && movement.z != float.NaN)
+        if (!float.IsNaN(movement.x) && !float.IsNaN(movement.y) && !float.IsNaN(movement.z))
             rb.AddForce(movement, ForceMode.Impulse);
 
         // Set camAnchor position and rotate camera to face player
