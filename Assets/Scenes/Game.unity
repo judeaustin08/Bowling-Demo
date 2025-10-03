@@ -342,7 +342,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1870873717}
   entityPrefab: {fileID: 7957706276087475660, guid: bc413f4116298477fbcfd1e56812f502, type: 3}
-  spawnChance: 0.001
+  spawnChance: 0.005
   simulationDistance: 50
   cap: 10
 --- !u!1 &207630798
