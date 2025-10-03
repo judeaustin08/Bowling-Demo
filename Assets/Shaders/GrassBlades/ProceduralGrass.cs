@@ -101,6 +101,10 @@ public class ProceduralGrass : MonoBehaviour
 
     public void Initialize(Mesh mesh)
     {
+        // Return early if platform does not support compute shaders
+        if (Application.platform == RuntimePlatform.WebGLPlayer)
+            return;
+
         if (initialized) Dispose();
 
         kernel = computeShader.FindKernel("CalculateBladePositions");
@@ -206,6 +210,8 @@ public class ProceduralGrass : MonoBehaviour
         terrainVertexBuffer?.Dispose();
         transformMatrixBuffer?.Dispose();
 
+        grassNoiseBuffer?.Dispose();
+
         grassTriangleBuffer?.Dispose();
         grassVertexBuffer?.Dispose();
         grassUVBuffer?.Dispose();
@@ -214,6 +220,11 @@ public class ProceduralGrass : MonoBehaviour
     }
 
     private void OnDisable()
+    {
+        Dispose();
+    }
+
+    private void OnApplicationQuit()
     {
         Dispose();
     }

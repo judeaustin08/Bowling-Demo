@@ -19,9 +19,11 @@ public class EntitySpawner : MonoBehaviour
         _gcm = GetComponent<GlobalChunkManager>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        if (rand.NextDouble() < spawnChance)
+        RemoveOutsideSimulationDistance();
+
+        if (rand.NextDouble() < spawnChance && count < cap)
         {
             Vector3 position = new(
                 player.position.x + Random.Range(-simulationDistance, simulationDistance),
