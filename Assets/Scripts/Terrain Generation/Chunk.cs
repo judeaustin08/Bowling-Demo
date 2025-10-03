@@ -12,6 +12,8 @@ public class Chunk : MonoBehaviour
     private float vertexSpacing;
 
     [HideInInspector] public Vector3[] vertices;
+    // Vertices which are rendered - not including border vertices
+    [HideInInspector] public Vector3[] renderedVertices;
     private Vector2[] uvs;
     private int[] triangles;
     // The normal vector calculation takes into account the faces adjacent to the face whose normal
@@ -19,7 +21,7 @@ public class Chunk : MonoBehaviour
     // adjacent chunks due to the fact that they do not have access to other chunks' vertex data.
     private int[] borderTris;
     private Mesh mesh;
-    private Dictionary<Vector3, GameObject> objects = new();
+    public Dictionary<Vector3, GameObject> objects = new();
 
     // Cleanly regenerate the vertex and tri information for this object
     public void RegenerateMesh()
@@ -37,14 +39,19 @@ public class Chunk : MonoBehaviour
         int borderSize = chunkResolution + 2;
         vertices = new Vector3[borderSize * borderSize];
         uvs = new Vector2[borderSize * borderSize];
+        renderedVertices = new Vector3[chunkResolution * chunkResolution];
         float x, y;
         // Loop through all vertices and set them to the correct positions
-        for (int i = 0; i < vertices.Length; i++)
+        for (int i = 0, rvi = 0; i < vertices.Length; i++)
         {
             x = i % borderSize - 1;
             y = i / borderSize - 1;
             uvs[i] = new Vector2(x, y);
             vertices[i] = new Vector3(x, 0, y) * vertexSpacing;
+
+            // If vertex is not a border vertex
+            if (i > borderSize && i < borderSize * (borderSize - 1) && i % borderSize > 0 && i % borderSize < borderSize - 1)
+                renderedVertices[rvi++] = new Vector3(x, 0, y) * vertexSpacing;
         }
 
         mesh.vertices = vertices;
@@ -137,6 +144,7 @@ public class Chunk : MonoBehaviour
         return normals;
     }
 
+    // Get vector orthagonal to two sides of the triangle
     private Vector3 SurfaceNormalFromIndices(int idx_a, int idx_b, int idx_c)
     {
         Vector3 a = vertices[idx_a];
@@ -147,5 +155,19 @@ public class Chunk : MonoBehaviour
         Vector3 ac = c - a;
 
         return Vector3.Cross(ab, ac).normalized;
+    }
+
+    public void CreateAllObjects()
+    {
+        List<Vector3> keys = new(objects.Keys);
+
+        for (int i = 0; i < keys.Count; i++)
+            // Instantiate the object as a child transform so it is disabled when the chunk is disabled
+            Instantiate(
+                objects[keys[i]],
+                transform.position + keys[i],
+                Quaternion.Euler(0, Random.Range(0, 360), 0),
+                transform
+            );
     }
 }

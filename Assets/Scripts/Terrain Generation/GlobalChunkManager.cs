@@ -12,6 +12,15 @@ public class GlobalChunkManager : MonoBehaviour
     private Vector2Int currentChunk;
     [SerializeField] private GameObject chunkPrefab;
 
+    [System.Serializable]
+    private struct RandomObject
+    {
+        public GameObject[] prefabs;
+        public float spawnChance;
+    }
+    [SerializeField] private RandomObject[] spawnObjects;
+
+    [Header("Mesh Variables")]
     [SerializeField] private int renderDistance = 5;
     [Tooltip("The number of vertices on each side of a chunk mesh")]
     [SerializeField] private int standardResolution = 10;
@@ -36,6 +45,7 @@ public class GlobalChunkManager : MonoBehaviour
     void Awake()
     {
         seed = (int)(rand.NextDouble() * 10000);
+        rand = new System.Random(seed);
     }
 
     void Start()
@@ -87,7 +97,9 @@ public class GlobalChunkManager : MonoBehaviour
 
                 if (!chunkmap.TryGetValue(pos, out _))
                 {
-                    chunkmap.Add(pos, CreateChunk(pos));
+                    GameObject c = CreateChunk(pos);
+                    chunkmap.Add(pos, c);
+                    GenerateObjects(c.GetComponent<Chunk>());
                 }
 
                 if (!loaded.TryGetValue(pos, out _))
@@ -96,6 +108,25 @@ public class GlobalChunkManager : MonoBehaviour
                     chunkmap[pos].SetActive(true);
                 }
             }
+    }
+
+    private void GenerateObjects(Chunk c)
+    {
+        foreach (RandomObject obj in spawnObjects)
+        {
+            // Select random prefab from options
+            GameObject prefab = obj.prefabs[Random.Range(0, obj.prefabs.Length)];
+            float chance = obj.spawnChance;
+
+            for (int i = 0; i < c.renderedVertices.Length; i++)
+                if (rand.NextDouble() < chance)
+                {
+                    c.renderedVertices[i].y = GetHeight(c.transform.position + c.renderedVertices[i]);
+                    c.objects.Add(c.renderedVertices[i], prefab);
+                }
+        }
+
+        c.CreateAllObjects();
     }
 
     float maxHeight;

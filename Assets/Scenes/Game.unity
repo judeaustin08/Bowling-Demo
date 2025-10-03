@@ -151,6 +151,17 @@ MonoBehaviour:
   player: {fileID: 1870873717}
   resetPlayerHeightOnStart: 1
   chunkPrefab: {fileID: 779916097287763534, guid: fee3f4ca754234a4c8c32c8cbc145085, type: 3}
+  spawnObjects:
+  - prefabs:
+    - {fileID: 4609327255475251515, guid: 699f519cb99e2ce4fb85dc574f9456b1, type: 3}
+    - {fileID: 4888615351024343956, guid: 6accce3c3b8897943aac8c9a46c0e36d, type: 3}
+    - {fileID: 6542483113221847072, guid: 792cbefb73334814196019fa938da2e1, type: 3}
+    - {fileID: 9108724015694704437, guid: f66d134a419ca76459f0e86f1bc4a770, type: 3}
+    - {fileID: 1869955532244172001, guid: fe27f330d8c3a2344968fabcb9ce0cbc, type: 3}
+    - {fileID: 5588029322454000848, guid: fd4eb68e3939a0d4eb0e4efa5e34bb93, type: 3}
+    - {fileID: 3756750694232969135, guid: f7df15e9afd74ba48ad272901ad99619, type: 3}
+    - {fileID: 128012089528687741, guid: 83dc20fc8b5488949beb7d022bc1efae, type: 3}
+    spawnChance: 0.02
   renderDistance: 10
   standardResolution: 11
   chunkSize: 10
