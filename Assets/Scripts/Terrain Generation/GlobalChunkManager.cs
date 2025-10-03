@@ -17,8 +17,11 @@ public class GlobalChunkManager : MonoBehaviour
     {
         public GameObject[] prefabs;
         public float spawnChance;
+        public Vector3 lockDirection;
+        public float leeway;
     }
     [SerializeField] private RandomObject[] spawnObjects;
+    [SerializeField] private int startClearRadius;
 
     [Header("Mesh Variables")]
     [SerializeField] private int renderDistance = 5;
@@ -50,6 +53,13 @@ public class GlobalChunkManager : MonoBehaviour
 
     void Start()
     {
+        // Generate chunks in the startClearRadius without objects
+        for (int i = -startClearRadius; i <= startClearRadius; i++)
+            for (int j = -startClearRadius; j <= startClearRadius; j++)
+            {
+                Vector2 coordinates = new(i, j);
+                chunkmap.Add(coordinates, CreateChunk(coordinates));
+            }
         LoadChunks();
 
         if (resetPlayerHeightOnStart)
@@ -118,11 +128,11 @@ public class GlobalChunkManager : MonoBehaviour
             GameObject prefab = obj.prefabs[Random.Range(0, obj.prefabs.Length)];
             float chance = obj.spawnChance;
 
-            for (int i = 0; i < c.renderedVertices.Length; i++)
-                if (rand.NextDouble() < chance)
+            for (int i = 0; i < c.vertices.Length; i++)
+                if (rand.NextDouble() < chance && Vector3.Angle(obj.lockDirection, c.gameObject.GetComponent<MeshFilter>().mesh.normals[i]) < obj.leeway)
                 {
-                    c.renderedVertices[i].y = GetHeight(c.transform.position + c.renderedVertices[i]);
-                    c.objects.Add(c.renderedVertices[i], prefab);
+                    c.vertices[i].y = GetHeight(c.transform.position + c.vertices[i]);
+                    c.objects.Add(c.vertices[i], prefab);
                 }
         }
 
