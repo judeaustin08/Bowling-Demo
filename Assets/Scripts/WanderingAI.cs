@@ -56,12 +56,6 @@ public class WanderingAI : MonoBehaviour
 
     private void Update()
     {
-        transform.rotation = Quaternion.Euler(
-            0,
-            Vector3.SignedAngle(Vector3.forward, movement, Vector3.up),
-            0
-        );
-
         if (reachedEndOfPath && Time.time - timer >= minTargetInterval && rand.NextDouble() < targetChance)
             ChooseTarget();
 
@@ -78,8 +72,8 @@ public class WanderingAI : MonoBehaviour
         if (reachedEndOfPath) return;
 
         dir = (path.vectorPath[currentWaypoint] - transform.position).normalized;
-        movement = dir * speed * speedFactor;
-        _cc.SimpleMove(movement);
+        movement = dir * speed * speedFactor * Time.deltaTime;
+        _cc.Move(movement);
     }
 
     public void OnPathComplete(Path p)
@@ -103,7 +97,15 @@ public class WanderingAI : MonoBehaviour
             distanceToWaypoint = Vector3.Distance(transform.position, path.vectorPath[currentWaypoint]);
             if (distanceToWaypoint < nextWaypointDistance)
                 if (currentWaypoint + 1 < path.vectorPath.Count)
+                {
                     currentWaypoint++;
+                    dir = (path.vectorPath[currentWaypoint] - transform.position).normalized;
+                    transform.rotation = Quaternion.Euler(
+                        0,
+                        Vector3.SignedAngle(Vector3.forward, dir, Vector3.up),
+                        0
+                    );
+                }
                 else
                 {
                     // Set the status variable in case the game has code which needs to know
