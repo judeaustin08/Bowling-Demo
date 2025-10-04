@@ -44,6 +44,10 @@ public class ProceduralGrass : MonoBehaviour
     [Tooltip("Maximum random offset in the x- and z-directions.")]
     public float maxOffset = 0.1f;
 
+    [Tooltip("Used for grass shear distortion near the player")]
+    [SerializeField] private string playerTag = "Player";
+    private Transform player;
+
     private GraphicsBuffer terrainTriangleBuffer;
     private GraphicsBuffer terrainVertexBuffer;
 
@@ -63,8 +67,13 @@ public class ProceduralGrass : MonoBehaviour
     private int terrainTriangleCount = 0;
 
     private bool initialized = false;
-    
+
     private int sideLength;
+
+    private void Awake()
+    {
+        player = GameObject.FindGameObjectWithTag(playerTag).transform;
+    }
 
     private Vector3[] RemoveBorderVertices(Vector3[] borderVertices)
     {
@@ -189,6 +198,8 @@ public class ProceduralGrass : MonoBehaviour
         rp.matProps.SetBuffer("_Positions", grassVertexBuffer);
         rp.matProps.SetBuffer("_UVs", grassUVBuffer);
         */
+
+        properties.SetVector("_PlayerPosition", player.position);
 
         //Graphics.RenderPrimitivesIndexed(rp, MeshTopology.Triangles, grassTriangleBuffer, grassTriangleBuffer.count, instanceCount: terrainTriangleCount);
         if (grassTriangleBuffer != null)

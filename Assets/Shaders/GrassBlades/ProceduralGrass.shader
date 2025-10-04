@@ -7,6 +7,7 @@ Shader "Grass/ProceduralGrass"
 		_ColorNoise("Color Noise", float) = 0.1
 		_ViewDistance("View Distance", float) = 10
 		_FadeDistance("Fade Distance", float) = 3
+		_TrampleDistance("Trample Distance", float) = 2
 		_BaseTex("Base Texture", 2D) = "white" {}
 	}
 
@@ -48,6 +49,7 @@ Shader "Grass/ProceduralGrass"
 			StructuredBuffer<float2> _UVs;
 			StructuredBuffer<float4x4> _TransformMatrices;
 			StructuredBuffer<float3> _GrassNoise;
+			float3 _PlayerPosition;
 
 			CBUFFER_START(UnityPerMaterial)
 				float4 _BaseColor;
@@ -57,6 +59,7 @@ Shader "Grass/ProceduralGrass"
 				float4 _BaseTex_ST;
 				float _ViewDistance;
 				float _FadeDistance;
+				float _TrampleDistance;
 
 				float _Cutoff;
 			CBUFFER_END
@@ -79,6 +82,19 @@ Shader "Grass/ProceduralGrass"
 				float4x4 objectToWorld = _TransformMatrices[v.instanceID];
 
 				o.positionWS = mul(objectToWorld, positionOS);
+
+				// Calculate shear offset of vertex based on height and distance to player
+				_PlayerPosition.y = o.positionWS.y;
+				float3 dir = _PlayerPosition - o.positionWS.xyz;
+				float dir_mag = length(dir);
+				if (dir_mag < _TrampleDistance)
+				{
+					float shearAmount = 1 - dir_mag / _TrampleDistance;
+					positionOS += float4((dir / dir_mag) * positionOS.y * shearAmount, 0);
+				}
+
+				o.positionWS = mul(objectToWorld, positionOS);
+
 				o.positionCS = mul(UNITY_MATRIX_VP, o.positionWS);
 				o.uv = _UVs[v.vertexID];
 				o.objNoise = _GrassNoise[v.instanceID];
