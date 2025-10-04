@@ -1,5 +1,7 @@
-using UnityEngine;
 using Pathfinding;
+using UnityEngine;
+
+using static Utils;
 
 [RequireComponent(typeof(CharacterController), typeof(Seeker))]
 public class WanderingAI : MonoBehaviour
@@ -29,6 +31,7 @@ public class WanderingAI : MonoBehaviour
 
     private Vector3 dir = new();
     private Vector3 movement = new();
+    private float angle = 0;
 
     private void Awake()
     {
@@ -99,12 +102,23 @@ public class WanderingAI : MonoBehaviour
                 if (currentWaypoint + 1 < path.vectorPath.Count)
                 {
                     currentWaypoint++;
+
                     dir = (path.vectorPath[currentWaypoint] - transform.position).normalized;
-                    transform.rotation = Quaternion.Euler(
-                        0,
+                    angle = (angle + 180) % 360 - 180;
+                    StartCoroutine(LerpAsync(
+                        angle,
                         Vector3.SignedAngle(Vector3.forward, dir, Vector3.up),
-                        0
-                    );
+                        0.1f,
+                        (nv) => {
+                            angle = nv;
+
+                            transform.rotation = Quaternion.Euler(
+                                0,
+                                angle,
+                                0
+                            );
+                        }
+                    ));
                 }
                 else
                 {

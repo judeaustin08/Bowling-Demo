@@ -63,6 +63,7 @@ public class ProceduralGrass : MonoBehaviour
     private int terrainTriangleCount = 0;
 
     private bool initialized = false;
+    
     private int sideLength;
 
     private Vector3[] RemoveBorderVertices(Vector3[] borderVertices)
@@ -179,7 +180,7 @@ public class ProceduralGrass : MonoBehaviour
     // Run a single draw call to render all the grass blade meshes each frame.
     private void Update()
     {
-        if (!initialized) return;
+        if (!(initialized && enabled)) return;
         /*
         RenderParams rp = new RenderParams(material);
         rp.worldBounds = bounds;
@@ -222,6 +223,11 @@ public class ProceduralGrass : MonoBehaviour
     }
 
     private void OnApplicationQuit()
+    {
+        Dispose();
+    }
+
+    private void OnDestroy()
     {
         Dispose();
     }
