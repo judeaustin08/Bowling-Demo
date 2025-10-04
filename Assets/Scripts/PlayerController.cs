@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.Audio;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
@@ -20,6 +21,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool invertLook = false;
     private Vector3 lookAngles;
     private GameObject camAnchor;
+
+    [System.Serializable]
+    public struct Sound
+    {
+        public AudioClip clip;
+        public AudioMixerGroup group;
+    }
+    [SerializeField] private Sound[] movementSounds;
+    [SerializeField] private AudioMixer movementMixer;
+    [SerializeField] private string masterVolumeParamaterName = "_MasterVolume";
 
     [SerializeField] private TMP_Text txt_score;
     private int score;
@@ -58,6 +69,16 @@ public class PlayerController : MonoBehaviour
     {
         // Cap linear velocity
         rb.maxLinearVelocity = maxVelocity;
+
+        // Create audio sources
+        foreach (Sound s in movementSounds)
+        {
+            AudioSource a = gameObject.AddComponent<AudioSource>();
+            a.clip = s.clip;
+            a.outputAudioMixerGroup = s.group;
+            a.loop = true;
+            a.Play();
+        }
     }
 
     void Update()
@@ -85,6 +106,7 @@ public class PlayerController : MonoBehaviour
             dir.y
         );
 
+        float attenuation = -80;
         // If the player has linear velocity
         if (rb.linearVelocity.magnitude != 0)
         {
@@ -102,11 +124,17 @@ public class PlayerController : MonoBehaviour
 
             // Add components to get the final movement vector
             movement = movementComponents[0] * perpendicularVector.normalized + movementComponents[1] * rb.linearVelocity.normalized;
+
+            // Calculate movement noise attenuation from current velocity and max velocity
+            // -80db is maximum attentuation
+            attenuation = Mathf.Clamp(Mathf.Log(rb.linearVelocity.magnitude / rb.maxLinearVelocity, 1.2f), -80, 0);
         }
 
         // Apply force
         if (!float.IsNaN(movement.x) && !float.IsNaN(movement.y) && !float.IsNaN(movement.z))
             rb.AddForce(movement, ForceMode.Impulse);
+        
+        movementMixer.SetFloat(masterVolumeParamaterName, attenuation);
 
         // Set camAnchor position and rotate camera to face player
         camAnchor.transform.SetPositionAndRotation(

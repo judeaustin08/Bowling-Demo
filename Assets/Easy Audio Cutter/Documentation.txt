@@ -1,0 +1,33 @@
+Easy Audio Cutter - Help
+
+**Trim Tab**
+• Allows trimming a specific section with fade in/out effects.
+• Offers preview and save options to test and export your edits.
+• Supports adjustable start and end times for precise trimming of audio clips.
+• Fade in/out durations can be customized to create smooth transitions.
+• Waveform visualization updates in real-time as you adjust trim or fade settings.
+• Tip: Use the curve editor to fine-tune fade effects for creative control.
+
+**Merge Tab**
+• Combines multiple audio files into a single clip.
+• All audio files must have the same format (e.g., same sample rate and channels) to ensure compatibility.
+• Provides preview functionality for merged audio before saving.
+• Add or remove clips dynamically using the '+' and 'X' buttons.
+• Tip: Verify audio formats beforehand to avoid errors during merging.
+
+**Adjust Volume Tab**
+• Increases or decreases the volume of selected audio files.
+• Use -1 to 1 range: negative values decrease volume, positive values increase it, and 0 leaves it unchanged.
+• Allows real-time preview of volume adjustments to hear changes instantly.
+• Saves modified clips with a '_Adjusted' suffix to preserve original files.
+• Tip: Avoid setting values close to -1 or 1 to prevent audio clipping or excessive reduction.
+• Supports multiple clips for batch volume adjustment.
+
+**General Information**
+• Saves all processed audio in WAV format for broad compatibility.
+• Curve fields in the Trim tab determine the shape and smoothness of fade transitions.
+• Compatible with Unity's audio system for seamless integration into your projects.
+• Developed and updated as of July 05, 2025, at 02:04 PM +03.
+• Requires an AudioClip to be assigned before performing any operations.
+• Note: Preview audio is temporary and cleared when the window is closed.
+• For best results, use high-quality audio files and test previews before saving.

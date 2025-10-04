@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 65850265c343de44bb597f41533d055b
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 316085
+  packageName: Easy Audio Cutter
+  packageVersion: 1.0
+  assetPath: Assets/Easy Audio Cutter/Scripts/Editor/AudioTrimProjectExtension.cs
+  uploadId: 769919

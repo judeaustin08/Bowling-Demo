@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Rendering.Universal;
 
 public class SplatCollectible : Collectible
 {
     [SerializeField] private AudioClip[] sounds;
+    [SerializeField] private AudioMixerGroup group;
 
     [SerializeField] private GameObject model;
     private Collider _col;
@@ -36,6 +38,7 @@ public class SplatCollectible : Collectible
         _dp.enabled = true;
 
         AudioClip sound = sounds[Random.Range(0, sounds.Length)];
+        _as.outputAudioMixerGroup = group;
         _as.PlayOneShot(sound);
     }
 }
