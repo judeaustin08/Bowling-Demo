@@ -109,6 +109,8 @@ public class ProceduralGrass : MonoBehaviour
         return tris;
     }
 
+    Vector3[] terrainVertices;
+    int[] terrainTriangles;
     public void Initialize(Mesh mesh)
     {
         if (initialized) Dispose();
@@ -118,11 +120,11 @@ public class ProceduralGrass : MonoBehaviour
         terrainMesh = mesh;
 
         // Terrain data for the compute shader.
-        Vector3[] terrainVertices = RemoveBorderVertices(terrainMesh.vertices);
+        terrainVertices = RemoveBorderVertices(terrainMesh.vertices);
         terrainVertexBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, terrainVertices.Length, sizeof(float) * 3);
         terrainVertexBuffer.SetData(terrainVertices);
 
-        int[] terrainTriangles = ConstructTriangles();
+        terrainTriangles = ConstructTriangles();
         terrainTriangleBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, terrainTriangles.Length, sizeof(int));
         terrainTriangleBuffer.SetData(terrainTriangles);
 

@@ -19,6 +19,7 @@ public class GlobalChunkManager : MonoBehaviour
         public float spawnChance;
         public Vector3 lockDirection;
         public float leeway;
+        public bool allowOverlap;
     }
     [SerializeField] private RandomObject[] spawnObjects;
     [SerializeField] private int startClearRadius;
@@ -129,18 +130,16 @@ public class GlobalChunkManager : MonoBehaviour
 
     private void GenerateObjects(Chunk c)
     {
-        foreach (RandomObject obj in spawnObjects)
+        foreach (RandomObject spawnObject in spawnObjects)
         {
             // Select random prefab from options
-            GameObject prefab = obj.prefabs[Random.Range(0, obj.prefabs.Length)];
-            float chance = obj.spawnChance;
+            GameObject prefab = spawnObject.prefabs[Random.Range(0, spawnObject.prefabs.Length)];
+            float chance = spawnObject.spawnChance;
 
             for (int i = 0; i < c.vertices.Length; i++)
-                if (rand.NextDouble() < chance && Vector3.Angle(obj.lockDirection, c.gameObject.GetComponent<MeshFilter>().mesh.normals[i]) < obj.leeway)
-                {
-                    c.vertices[i].y = GetHeight(c.transform.position + c.vertices[i]);
-                    c.objects.Add(c.vertices[i], prefab);
-                }
+                if (rand.NextDouble() < chance && Vector3.Angle(spawnObject.lockDirection, c.gameObject.GetComponent<MeshFilter>().mesh.normals[i]) < spawnObject.leeway)
+                    if (!(c.objects.TryGetValue(c.vertices[i], out _) && spawnObject.allowOverlap))
+                        c.objects.Add(c.vertices[i], prefab);
         }
 
         c.CreateAllObjects();
